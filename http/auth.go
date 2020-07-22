@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -98,6 +99,7 @@ var loginHandler = func(w http.ResponseWriter, r *http.Request, d *data) (int, e
 	}
 
 	user, err := auther.Auth(r, d.store.Users, d.server.Root)
+	fmt.Println(err)
 	if err == os.ErrPermission {
 		return http.StatusForbidden, nil
 	} else if err != nil {

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Logging into filebrowser ...</h1>
+ {{ username }}
+
+<script type="text/javascript">
+    localStorage.setItem('jwt', '{{ data.authkey }}')
+    window.location.href = 'http://localhost:8081/files/'
+</script>
+</body>
+</html>

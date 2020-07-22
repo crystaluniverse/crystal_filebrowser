@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  3bot_auth:
+    container_name: "3bot_auth"
+    build: .
+
+networks: 
+  default:
+    external:
+      name: filebrowser

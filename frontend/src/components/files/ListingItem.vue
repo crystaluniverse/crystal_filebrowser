@@ -44,7 +44,7 @@ export default {
       touches: 0
     }
   },
-  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index'],
+  props: ['name', 'isDir', 'url', 'type', 'size', 'modified', 'index', 'fileKey'],
   computed: {
     ...mapState(['selected', 'req', 'user', 'jwt']),
     ...mapGetters(['selectedCount']),

@@ -1,42 +1,47 @@
 <template>
   <div id="previewer">
-    <div class="bar">
-      <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
-        <i class="material-icons">close</i>
+    <template v-if="documentTypes.includes(fileExtention)">
+      <DocumentEditor :fileData="req"></DocumentEditor>
+    </template>
+    <template v-else>
+      <div class="bar">
+        <button @click="back" class="action" :title="$t('files.closePreview')" :aria-label="$t('files.closePreview')" id="close">
+          <i class="material-icons">close</i>
+        </button>
+
+        <rename-button v-if="user.perm.rename"></rename-button>
+        <delete-button v-if="user.perm.delete"></delete-button>
+        <download-button v-if="user.perm.download"></download-button>
+        <info-button></info-button>
+      </div>
+
+      <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
+        <i class="material-icons">chevron_left</i>
+      </button>
+      <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
+        <i class="material-icons">chevron_right</i>
       </button>
 
-      <rename-button v-if="user.perm.rename"></rename-button>
-      <delete-button v-if="user.perm.delete"></delete-button>
-      <download-button v-if="user.perm.download"></download-button>
-      <info-button></info-button>
-    </div>
-
-    <button class="action" @click="prev" v-show="hasPrevious" :aria-label="$t('buttons.previous')" :title="$t('buttons.previous')">
-      <i class="material-icons">chevron_left</i>
-    </button>
-    <button class="action" @click="next" v-show="hasNext" :aria-label="$t('buttons.next')" :title="$t('buttons.next')">
-      <i class="material-icons">chevron_right</i>
-    </button>
-
-    <div class="preview">
-      <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
-      <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
-      <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
-        <track
-          kind="captions"
-          v-for="(sub, index) in subtitles"
-          :key="index"
-          :src="sub"
-          :label="'Subtitle ' + index" :default="index === 0">
-        Sorry, your browser doesn't support embedded videos,
-        but don't worry, you can <a :href="download">download it</a>
-        and watch it with your favorite video player!
-      </video>
-      <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
-      <a v-else-if="req.type == 'blob'" :href="download">
-        <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
-      </a>
-    </div>
+      <div class="preview">
+        <ExtendedImage v-if="req.type == 'image'" :src="raw"></ExtendedImage>
+        <audio v-else-if="req.type == 'audio'" :src="raw" autoplay controls></audio>
+        <video v-else-if="req.type == 'video'" :src="raw" autoplay controls>
+          <track
+            kind="captions"
+            v-for="(sub, index) in subtitles"
+            :key="index"
+            :src="sub"
+            :label="'Subtitle ' + index" :default="index === 0">
+          Sorry, your browser doesn't support embedded videos,
+          but don't worry, you can <a :href="download">download it</a>
+          and watch it with your favorite video player!
+        </video>
+        <object v-else-if="req.extension == '.pdf'" class="pdf" :data="raw"></object>
+        <a v-else-if="req.type == 'blob'" :href="download">
+          <h2 class="message">{{ $t('buttons.download') }} <i class="material-icons">file_download</i></h2>
+        </a>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -49,7 +54,9 @@ import InfoButton from '@/components/buttons/Info'
 import DeleteButton from '@/components/buttons/Delete'
 import RenameButton from '@/components/buttons/Rename'
 import DownloadButton from '@/components/buttons/Download'
+import DocumentEditor from '@/components/files/DocumentEditor'
 import ExtendedImage from './ExtendedImage'
+import { randomBytes } from "crypto"
 
 const mediaTypes = [
   "image",
@@ -65,14 +72,20 @@ export default {
     DeleteButton,
     RenameButton,
     DownloadButton,
-    ExtendedImage
+    ExtendedImage,
+    DocumentEditor
   },
   data: function () {
     return {
       previousLink: '',
       nextLink: '',
       listing: null,
-      subtitles: []
+      subtitles: [],
+      documentTypes: [
+        "docx",
+        "pptx",
+        "xlsx"
+      ]
     }
   },
   computed: {
@@ -94,6 +107,9 @@ export default {
     },
     raw () {
       return `${this.previewUrl}&inline=true`
+    },
+    fileExtention () {
+      return this.req.extension.replace(".", "")
     }
   },
   async mounted () {
@@ -157,10 +173,9 @@ export default {
             break
           }
         }
-
         return
       }
-    }
+    },
   }
 }
 </script>

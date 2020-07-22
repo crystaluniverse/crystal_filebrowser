@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  filebrowser-callback:
+    container_name: "filebrowser-callback"
+    build: .
+    volumes:
+      - "../../datafiles:/datafiles"
+
+networks: 
+  default:
+    external:
+      name: filebrowser

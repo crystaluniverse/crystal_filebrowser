@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  filebrowser:
+    container_name: "filebrowser"
+    build: .
+    volumes:
+      - "./datafiles:/srv"
+
+networks: 
+  default:
+    external:
+      name: filebrowser

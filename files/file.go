@@ -38,6 +38,7 @@ type FileInfo struct {
 	Subtitles []string          `json:"subtitles,omitempty"`
 	Content   string            `json:"content,omitempty"`
 	Checksums map[string]string `json:"checksums,omitempty"`
+	Key       []byte            `json:"key"`
 }
 
 // FileOptions are the options when getting a file info.
@@ -47,6 +48,23 @@ type FileOptions struct {
 	Modify  bool
 	Expand  bool
 	Checker rules.Checker
+}
+
+func generateFileKey(fs afero.Fs, path string) []byte {
+	reader, err := fs.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer reader.Close()
+
+	hash := sha256.New()
+
+	_, err = io.Copy(hash, reader)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return hash.Sum(nil)
 }
 
 // NewFileInfo creates a File object from a path and a given user. This File
@@ -62,6 +80,12 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		return nil, err
 	}
 
+	var key []byte
+
+	if !info.IsDir() {
+		key = generateFileKey(opts.Fs, opts.Path)
+	}
+
 	file := &FileInfo{
 		Fs:        opts.Fs,
 		Path:      opts.Path,
@@ -71,6 +95,7 @@ func NewFileInfo(opts FileOptions) (*FileInfo, error) {
 		IsDir:     info.IsDir(),
 		Size:      info.Size(),
 		Extension: filepath.Ext(info.Name()),
+		Key:       key,
 	}
 
 	if opts.Expand {
@@ -241,6 +266,12 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 			}
 		}
 
+		var key []byte
+
+		if !f.IsDir() {
+			key = generateFileKey(i.Fs, fPath)
+		}
+
 		file := &FileInfo{
 			Fs:        i.Fs,
 			Name:      name,
@@ -250,6 +281,7 @@ func (i *FileInfo) readListing(checker rules.Checker) error {
 			IsDir:     f.IsDir(),
 			Extension: filepath.Ext(name),
 			Path:      fPath,
+			Key:       key,
 		}
 
 		if file.IsDir {

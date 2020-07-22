@@ -71,7 +71,8 @@
         v-bind:url="item.url"
         v-bind:modified="item.modified"
         v-bind:type="item.type"
-        v-bind:size="item.size">
+        v-bind:size="item.size"
+        v-bind:fileKey="item.key">
       </item>
     </div>
 

@@ -32,6 +32,9 @@ func NewHandler(store *storage.Storage, server *settings.Server) (http.Handler, 
 	r.PathPrefix("/static").Handler(static)
 	r.NotFoundHandler = index
 
+	callback := r.PathPrefix("/callback").Subrouter()
+	callback.Handle("", monkey(callbackHandler, "")).Methods("POST")
+
 	api := r.PathPrefix("/api").Subrouter()
 
 	api.Handle("/login", monkey(loginHandler, ""))

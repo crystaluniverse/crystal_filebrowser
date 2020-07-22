@@ -1,15 +1,22 @@
-FROM alpine:latest as alpine
-RUN apk --update add ca-certificates
-RUN apk --update add mailcap
+FROM debian:buster
 
-FROM scratch
-COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=alpine /etc/mime.types /etc/mime.types
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install -y python3 python3-pip
+RUN pip3 --version
 
 VOLUME /srv
-EXPOSE 80
 
 COPY .docker.json /.filebrowser.json
 COPY filebrowser /filebrowser
 
-ENTRYPOINT [ "/filebrowser" ]
+COPY ./python/filebrowser-callback /python
+COPY startup.sh /startup.sh
+
+RUN pip3 install -r /python/requirements.txt
+
+RUN chmod +x startup.sh
+
+EXPOSE 80
+EXPOSE 5000
+
+CMD [ "./startup.sh" ]

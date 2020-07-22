@@ -32,8 +32,8 @@ export default {
     return {
       createMode: false,
       error: '',
-      username: '',
-      password: '',
+      username: 'admin',
+      password: 'admin',
       recaptcha: recaptcha,
       passwordConfirm: ''
     }
