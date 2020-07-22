@@ -16,6 +16,8 @@ RUN pip3 install -r /python/requirements.txt
 
 RUN chmod +x startup.sh
 
+RUN mkdir /datafiles
+
 EXPOSE 80
 EXPOSE 5000
 

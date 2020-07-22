@@ -9,7 +9,6 @@ import url from '@/utils/url'
 import { baseURL } from '@/utils/constants'
 import { files as api } from '@/api'
 import crypto from 'crypto'
-import md5File from 'md5-file'
 
 export default {
   name: 'document',
@@ -36,10 +35,10 @@ export default {
                 "fileType": this.fileData.extension.replace(".", ""),
                 "key": this.fileData.key.slice(0, 19).replace(new RegExp('[^A-Za-z0-9]+'), ""),
                 "title": this.fileData.name,
-                "url": `http://172.19.0.3:8081${this.documentLocation}`
+                "url": `${window.location.origin}${this.documentLocation}`
             },
             "editorConfig": {
-              "callbackUrl": `http://172.19.0.3:5000/callback?auth=${this.jwt}&filename=${this.fileData.name}`
+              "callbackUrl": `${window.location.origin}/callback?auth=${this.jwt}&filename=${this.fileData.name}`
             }
         }
         new window.DocsAPI.DocEditor("document", config)
