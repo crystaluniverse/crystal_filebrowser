@@ -83,8 +83,17 @@ export default {
       subtitles: [],
       documentTypes: [
         "docx",
+        "doc",
+        "odt",
+        "ppt",
         "pptx",
-        "xlsx"
+        "xls",
+        "xlsx",
+        "rtf",
+        "txt",
+        "ods",
+        "odp",
+        "csv"
       ]
     }
   },

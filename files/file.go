@@ -9,11 +9,10 @@ import (
 	"hash"
 	"io"
 	"log"
-	"mime"
-	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -21,6 +20,7 @@ import (
 
 	"github.com/filebrowser/filebrowser/v2/errors"
 	"github.com/filebrowser/filebrowser/v2/rules"
+	"github.com/gabriel-vasile/mimetype"
 )
 
 // FileInfo describes a file.
@@ -165,58 +165,39 @@ func (i *FileInfo) detectType(modify, saveContent bool) error {
 	// of files couldn't be opened: we'd have immediately
 	// a 500 even though it doesn't matter. So we just log it.
 	reader, err := i.Fs.Open(i.Path)
+
+	mime, err := mimetype.DetectReader(reader)
+
 	if err != nil {
-		log.Print(err)
 		i.Type = "blob"
 		return nil
 	}
+
 	defer reader.Close()
 
-	buffer := make([]byte, 512)
-	n, err := reader.Read(buffer)
-	if err != nil && err != io.EOF {
-		log.Print(err)
-		i.Type = "blob"
-		return nil
-	}
+	var reg = regexp.MustCompile(`video|image|audio`)
+	mimetype := mime.String()
+	isMatch := reg.MatchString(mimetype)
 
-	mimetype := mime.TypeByExtension(i.Extension)
-	if mimetype == "" {
-		mimetype = http.DetectContentType(buffer[:n])
-	}
-
-	switch {
-	case strings.HasPrefix(mimetype, "video"):
-		i.Type = "video"
+	if isMatch {
+		i.Type = strings.Split(mimetype, "/")[0]
 		i.detectSubtitles()
 		return nil
-	case strings.HasPrefix(mimetype, "audio"):
-		i.Type = "audio"
-		return nil
-	case strings.HasPrefix(mimetype, "image"):
-		i.Type = "image"
-		return nil
-	case isBinary(buffer[:n], n) || i.Size > 10*1024*1024: // 10 MB
-		i.Type = "blob"
-		return nil
-	default:
-		i.Type = "text"
-
-		if !modify {
-			i.Type = "textImmutable"
-		}
-
-		if saveContent {
-			afs := &afero.Afero{Fs: i.Fs}
-			content, err := afs.ReadFile(i.Path)
-			if err != nil {
-				return err
-			}
-
-			i.Content = string(content)
-		}
 	}
 
+	i.Type = strings.Replace(mime.Extension(), ".", "", -1)
+	if !modify {
+		i.Type = "textImmutable"
+	}
+
+	if saveContent {
+		afs := &afero.Afero{Fs: i.Fs}
+		content, err := afs.ReadFile(i.Path)
+		if err != nil {
+			return err
+		}
+		i.Content = string(content)
+	}
 	return nil
 }
 

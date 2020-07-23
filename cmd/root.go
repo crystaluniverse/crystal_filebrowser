@@ -259,7 +259,7 @@ func quickSetup(flags *pflag.FlagSet, d pythonData) {
 	set := &settings.Settings{
 		Key:           generateKey(),
 		Signup:        false,
-		CreateUserDir: false,
+		CreateUserDir: true,
 		Defaults: settings.UserDefaults{
 			Scope:  ".",
 			Locale: "en",
