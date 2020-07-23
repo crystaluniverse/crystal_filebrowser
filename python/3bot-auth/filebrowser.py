@@ -45,7 +45,7 @@ class FilebrowserAuthenticator:
         try:
             response = requests.post(f"{config['filebrowserUrl']}/api/users", headers=headers, json=user)
             print(response)
-            if response.status_code == 401:
+            if response.status_code == 403:
                 self.admin_authkey = self.getAuthenticationToken(credentials['admin_login'],credentials['admin_password'])
         except Exception:
             print('failed to register user')
