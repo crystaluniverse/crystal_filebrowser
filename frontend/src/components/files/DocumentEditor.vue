@@ -14,7 +14,7 @@ export default {
   name: 'document',
   components: {
   },
-  props: ['fileData'],
+  props: ['fileData', 'user'],
   data: function () {
     return {
     }
@@ -30,6 +30,7 @@ export default {
   },
   methods: {
     renderDocument () {
+      console.log(this.user)
       const config = {
             "document": {
                 "fileType": this.fileData.extension.replace(".", ""),
@@ -38,7 +39,11 @@ export default {
                 "url": `${window.location.origin}${this.documentLocation}`
             },
             "editorConfig": {
-              "callbackUrl": `${window.location.origin}/callback?auth=${this.jwt}&filename=${this.fileData.name}`
+              "callbackUrl": `${window.location.origin}/callback?auth=${this.jwt}&filename=${this.fileData.name}`,
+              "user": {
+                "id": crypto.randomBytes(8).toString('hex'),
+                "name": this.user.username
+              }
             }
         }
         new window.DocsAPI.DocEditor("document", config)

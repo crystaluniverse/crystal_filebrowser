@@ -1,7 +1,7 @@
 <template>
   <div id="previewer">
     <template v-if="documentTypes.includes(fileExtention)">
-      <DocumentEditor :fileData="req"></DocumentEditor>
+      <DocumentEditor :fileData="req" :user="user"></DocumentEditor>
     </template>
     <template v-else>
       <div class="bar">

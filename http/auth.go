@@ -22,6 +22,7 @@ const (
 
 type userInfo struct {
 	ID           uint              `json:"id"`
+	Username     string            `json:"username"`
 	Locale       string            `json:"locale"`
 	ViewMode     users.ViewMode    `json:"viewMode"`
 	Perm         users.Permissions `json:"perm"`
@@ -172,6 +173,7 @@ func printToken(w http.ResponseWriter, _ *http.Request, d *data, user *users.Use
 	claims := &authToken{
 		User: userInfo{
 			ID:           user.ID,
+			Username:     user.Username,
 			Locale:       user.Locale,
 			ViewMode:     user.ViewMode,
 			Perm:         user.Perm,
