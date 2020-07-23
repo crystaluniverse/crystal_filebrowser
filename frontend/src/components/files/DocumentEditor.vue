@@ -30,11 +30,10 @@ export default {
   },
   methods: {
     renderDocument () {
-      console.log(this.user)
       const config = {
             "document": {
-                "fileType": this.fileData.extension.replace(".", ""),
-                "key": this.fileData.key.slice(0, 19).replace(new RegExp('[^A-Za-z0-9]+'), ""),
+                "fileType": this.fileData.extension.replace('.', ''),
+                "key": this.fileData.key.replace(new RegExp('[^A-Za-z0-9]+', 'g'), '').slice(0, 19),
                 "title": this.fileData.name,
                 "url": `${window.location.origin}${this.documentLocation}`
             },
@@ -48,7 +47,6 @@ export default {
         }
         new window.DocsAPI.DocEditor("document", config)
         console.log(config)
-        console.log(this.fileData)
     }
   }
 }

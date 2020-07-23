@@ -13,11 +13,12 @@ class FilebrowserAuthenticator:
             'X-Auth': self.admin_authkey,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
+        scope = f"./{userName}"
         user = {
             "what": "user",
             "which": [],
             "data": {
-                "scope": ".",
+                "scope": scope,
                 "locale": "en",
                 "viewMode": "mosaic",
                 "sorting": {
