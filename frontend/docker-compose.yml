@@ -1,0 +1,11 @@
+version: "3.3"
+
+services:
+  filebrowser_frontend:
+    container_name: "filebrowser_frontend"
+    build: .
+
+networks: 
+  default:
+    external:
+      name: filebrowser      

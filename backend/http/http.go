@@ -18,7 +18,6 @@ func NewHandler(store *storage.Storage, server *settings.Server) (http.Handler, 
 	server.Clean()
 
 	r := mux.NewRouter()
-	index, static := getStaticHandlers(store, server)
 
 	// NOTE: This fixes the issue where it would redirect if people did not put a
 	// trailing slash in the end. I hate this decision since this allows some awful
@@ -28,12 +27,6 @@ func NewHandler(store *storage.Storage, server *settings.Server) (http.Handler, 
 	monkey := func(fn handleFunc, prefix string) http.Handler {
 		return handle(fn, prefix, store, server)
 	}
-
-	r.PathPrefix("/static").Handler(static)
-	r.NotFoundHandler = index
-
-	callback := r.PathPrefix("/callback").Subrouter()
-	callback.Handle("", monkey(callbackHandler, "")).Methods("POST")
 
 	api := r.PathPrefix("/api").Subrouter()
 
