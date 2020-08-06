@@ -1,0 +1,28 @@
+version: "3.3"
+
+services:
+  filebrowser:
+    container_name: "filebrowser"
+    build: .
+    volumes:
+      - "/filebrowser/datafiles:/datafiles"
+  
+  threebot_auth:
+    container_name: "threebot_auth"
+    build:
+      context: .
+      dockerfile: ./python/3bot-auth/Dockerfile
+
+  nginx:
+    container_name: "filebrowser_reverse_proxy"
+    image: nginx:alpine
+    ports:
+      - 80:80
+      - 443:443
+    volumes: 
+      - ./nginx:/etc/nginx
+
+networks: 
+  default:
+    external:
+      name: filebrowser
