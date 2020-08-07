@@ -1,6 +1,6 @@
 const name = 'File Browser'
 const disableExternal = true
-const baseURL = 'http://localhost:8081'
+const baseURL = 'http://172.18.0.2'
 const staticURL = ''
 const recaptcha = false
 const recaptchaKey = ''
@@ -9,7 +9,7 @@ const version = '1.0.0'
 const logoURL = `${staticURL}/img/logo.svg`
 const noAuth = false
 const authMethod = 'json'
-const loginPage = false
+const loginPage = true
 const theme = undefined
 
 export {
