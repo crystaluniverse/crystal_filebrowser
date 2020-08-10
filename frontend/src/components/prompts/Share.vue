@@ -207,6 +207,9 @@ export default {
     deleteUserAccess: async function(user, permission){
       await api.deleteUserAccess(this.url, user,permission)
     },
+    deleteAllShares: async function(){
+      await api.deleteAllShares(this.url)
+    },
     getLink: async function() {
       await api.getShareableLink(this.url, this.linkPermission);
     },
