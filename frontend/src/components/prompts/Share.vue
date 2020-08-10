@@ -28,7 +28,18 @@
       <button class="button button--flat" @click="shareUsers">
         Submit
       </button>
-
+      <h4>Already shared with</h4>
+      <div v-for="permission in sharePermissions" :key="permission.value">
+        <h5>
+          {{ permissionToHumanReadable(permission.value) }}
+        </h5>
+        <div v-for="user in userpermissions[permission.value]" :key="user">
+          <i class="material-icons" @click="deleteUserAccess(user, permission.value)">
+            delete
+          </i>
+          {{ user }}
+        </div>
+      </div>
       <h3>Get shareable link</h3>
       <select class="permissions" v-model="sharePermission">
         <option
@@ -41,37 +52,14 @@
       <button class="button button--flat" @click="getLink">
         Get link
       </button>
-      <!-- <li v-for="link in links" :key="link.hash">
-          <button class="action"
-            @click="deleteLink($event, link)"
-            :aria-label="$t('buttons.delete')"
-            :title="$t('buttons.delete')"><i class="material-icons">delete</i></button>
 
-          <button class="action copy-clipboard"
-            :data-clipboard-text="buildLink(link.hash)"
-            :aria-label="$t('buttons.copyToClipboard')"
-            :title="$t('buttons.copyToClipboard')"><i class="material-icons">content_paste</i></button>
-        </li>
-
-        <li>
-          <input 
-            type="number"
-            max="2147483647"
-            min="0"
-            @keyup.enter="submit"
-            v-model.trim="time">
-          <select v-model="unit" :aria-label="$t('time.unit')">
-            <option value="seconds">{{ $t('time.seconds') }}</option>
-            <option value="minutes">{{ $t('time.minutes') }}</option>
-            <option value="hours">{{ $t('time.hours') }}</option>
-            <option value="days">{{ $t('time.days') }}</option>
-          </select>
-          <button class="action"
-            @click="submit"
-            :aria-label="$t('buttons.create')"
-            :title="$t('buttons.create')"><i class="material-icons">add</i></button>
-        </li>
-      </ul>-->
+      <h4>Existing links</h4>
+      <div v-for="link in existingLinks" :key="link.uuid">
+        <i class="material-icons" @click="deleteLink(link.uuid)">
+          delete
+        </i>
+        {{ link.link }} {{ permissionToHumanReadable(link.permission) }}
+      </div>
     </div>
 
     <div class="card-action">
@@ -119,7 +107,9 @@ export default {
       ],
       users: "",
       sharePermission: "",
-      linkPermission: ""
+      linkPermission: "",
+      userpermissions: { rwd: ["hamdy", "tobias"], "r--": ["aaa"] },
+      existingLinks: [{ link: "url", permission: "rw-", uuid: "blah" }],
     };
   },
   computed: {
@@ -159,13 +149,21 @@ export default {
     this.clip.on("success", () => {
       this.$showSuccess(this.$t("success.linkCopied"));
     });
-    this.sharePermission = this.sharePermissions[0].value
-    this.linkPermission = this.sharePermissions[0].value
+    this.sharePermission = this.sharePermissions[0].value;
+    this.linkPermission = this.sharePermissions[0].value;
+
+    // this.userpermissions = api.listUserpermissions(this.url)
+    // this.existingLinks = api.listLinks(this.url)
+
   },
   beforeDestroy() {
     this.clip.destroy();
   },
   methods: {
+    permissionToHumanReadable(permission) {
+      return this.sharePermissions.find((perm) => permission == perm.value)
+        .name;
+    },
     submit: async function() {
       if (!this.time) return;
 
@@ -187,16 +185,16 @@ export default {
         this.$showError(e);
       }
     },
-    deleteLink: async function(event, link) {
-      event.preventDefault();
-      try {
-        await api.remove(link.hash);
-        if (link.expire === 0) this.hasPermanent = false;
-        this.links = this.links.filter((item) => item.hash !== link.hash);
-      } catch (e) {
-        this.$showError(e);
-      }
-    },
+    // deleteLink: async function(event, link) {
+    //   event.preventDefault();
+    //   try {
+    //     await api.remove(link.hash);
+    //     if (link.expire === 0) this.hasPermanent = false;
+    //     this.links = this.links.filter((item) => item.hash !== link.hash);
+    //   } catch (e) {
+    //     this.$showError(e);
+    //   }
+    // },
     shareUsers: async function() {
       const users = this.users.split(",");
       try {
@@ -206,8 +204,14 @@ export default {
         this.$showError(e);
       }
     },
+    deleteUserAccess: async function(user, permission){
+      await api.deleteUserAccess(this.url, user,permission)
+    },
     getLink: async function() {
-      await api.getShareableLink(this.url, this.linkPermission)
+      await api.getShareableLink(this.url, this.linkPermission);
+    },
+    deleteLink: async function(uuid) {
+      await api.deleteSharableLink(uuid);
     },
     humanTime(time) {
       return moment(time * 1000).fromNow();
