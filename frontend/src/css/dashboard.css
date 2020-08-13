@@ -176,7 +176,9 @@ table tr>*:last-child {
 .card#download {
   max-width: 15em;
 }
-
+.card#share{
+  max-width: 50em;
+}
 .card#share ul {
   list-style: none;
   padding: 0;

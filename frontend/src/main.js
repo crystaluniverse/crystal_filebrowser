@@ -6,6 +6,7 @@ import Vue from '@/utils/vue'
 import { recaptcha, loginPage } from '@/utils/constants'
 import { login, validateLogin } from '@/utils/auth'
 import App from '@/App'
+import vuetify from './plugins/vuetify'
 
 sync(store, router)
 
@@ -35,6 +36,7 @@ async function start () {
     store,
     router,
     i18n,
+    vuetify,
     template: '<App/>',
     components: { App }
   })

@@ -13,6 +13,10 @@
 @import "./dashboard.css";
 @import "./login.css";
 
+.v-application--wrap {
+  background-color: rgba(0, 0, 0, 0.87);
+}
+
 .link {
   color: var(--blue);
 }

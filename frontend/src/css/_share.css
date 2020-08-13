@@ -28,12 +28,3 @@
   text-overflow: ellipsis;
 }
 
-#share input, #share select {
-  height: 2em;
-}
-#share input {
-  display: inline-block;
-  width: auto;
-  margin-right: 10px;
-  width: 70%;
-}

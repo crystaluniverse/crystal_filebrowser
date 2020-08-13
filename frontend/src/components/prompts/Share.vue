@@ -3,63 +3,104 @@
     <div class="card-title">
       <h2>Share</h2>
     </div>
-
+{{sharePermission}}
     <div class="card-content">
-      <!--<li v-if="!hasPermanent">
-          <a @click="getPermalink" :aria-label="$t('buttons.permalink')">{{ $t('buttons.permalink') }}</a>
-        </li> -->
-      <h3>Share with people</h3>
-      <input
-        id="nameInput"
-        type="text"
-        v-focus
-        v-model="users"
-        placeholder="3bot names (comma separated)"
-      />
-      <select class="permissions" v-model="sharePermission">
-        <option
-          v-for="option in sharePermissions"
-          :key="option.value"
-          :value="option.value"
-          >{{ option.name }}</option
-        >
-      </select>
+      <v-data-table
+        dark
+        :headers="userheaders"
+        :items="userpermissions"
+        :search="userSearch"
+        item-key="name"
+        show-select
+        v-model="selectedUsers"
+      >
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-row>
+              <v-col cols="4">
+                People who have access
+              </v-col>
+              <v-spacer></v-spacer>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="userSearch"
+                  append-icon="mdi-magnify"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+                <v-btn class="ml-2" :enabled="selectedUsersCount>0">Delete {{selectedUsersCount}}</v-btn>
+              </v-col>
+            </v-row>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.action="{ item }">
+          <i class="material-icons" dark small @click="deleteUserAccess(item.name,item.permission)">delete</i>
+        </template>
+      </v-data-table>
+      {{ selectedUsers }}
 
-      <button class="button button--flat" @click="shareUsers">
-        Submit
-      </button>
-      <h4>Already shared with</h4>
-      <div v-for="permission in sharePermissions" :key="permission.value">
-        <h5>
-          {{ permissionToHumanReadable(permission.value) }}
-        </h5>
-        <div v-for="user in userpermissions[permission.value]" :key="user">
-          <i class="material-icons" @click="deleteUserAccess(user, permission.value)">
-            delete
-          </i>
-          {{ user }}
-        </div>
-      </div>
+      <v-row dense align="center">
+        <v-col cols="8">
+          <v-text-field dark v-model="users" clearable> </v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-select
+            class="permissions"
+            dark
+            v-model="sharePermission"
+            :items="permissionList"
+          >
+          </v-select>
+        </v-col>
+        <v-col cols="2" align="center">
+          <button class="button button--flat" @click="shareUsers">
+            Add
+          </button>
+        </v-col>
+      </v-row>
+
+      <h4>Existing links</h4>
+      <v-data-table
+        dark
+        :headers="linkheaders"
+        :items="existingLinks"
+        item-key="uuid"
+        show-select
+        v-model="selectedLinks"
+      >
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-row>
+              <v-col cols="4">
+                People who have access
+              </v-col>
+              <v-spacer></v-spacer>
+              <v-col cols="4">
+              </v-col>
+            </v-row>
+          </v-toolbar>
+        </template>
+        <template v-slot:item.action="{ item }">
+          <i class="material-icons" dark small @click="deleteLink(item.uuid)">delete</i>
+        </template>
+      </v-data-table>
+      {{selectedLinks}}
       <h3>Get shareable link</h3>
-      <select class="permissions" v-model="sharePermission">
-        <option
-          v-for="option in sharePermissions"
-          :key="option.value"
-          :value="option.value"
-          >{{ option.name }}</option
-        >
-      </select>
-      <button class="button button--flat" @click="getLink">
+      Users with the following link will get the following right:
+      <v-select
+        dense
+        class="permissions"
+        dark
+        v-model="sharePermission"
+        :items="permissionList"
+      >
+      </v-select>
+      <button class="buteton button--flat" @click="getLink">
         Get link
       </button>
 
-      <h4>Existing links</h4>
-      <div v-for="link in existingLinks" :key="link.uuid">
-        <i class="material-icons" @click="deleteLink(link.uuid)">
-          delete
-        </i>
-        {{ link.link }} {{ permissionToHumanReadable(link.permission) }}
-      </div>
+      
     </div>
 
     <div class="card-action">
@@ -105,11 +146,39 @@ export default {
           value: "rwd",
         },
       ],
+
+      userheaders: [
+        {
+          text: "3bot name",
+          value: "name",
+        },
+        {
+          text: "Acces right",
+          value: "permission",
+          filterable: true,
+        },
+        {
+          text: "Action",
+          value: "action",
+        },
+      ],
       users: "",
       sharePermission: "",
+      userpermissions: [
+        { name: "hamdy", permission: "rw-" },
+        { name: "tobias", permission: "r--" },
+        { name: "ivan", permission: "r--" },
+        { name: "alex", permission: "rwd" },
+        { name: "mathias", permission: "r--" },
+        { name: "jonas", permission: "r--" },
+      ],
+      selectedUsers: [],
+      userSearch: "",
+
+      linkheaders:[{text:"URL",value:"link"},{text: "Acces right",value: "permission"},{text: "Action",value: "action"}],
+      existingLinks: [{ link: "https://threefold.io/DDN4L34M6N434RJ3", permission: "rw-", uuid: "blah" }],
       linkPermission: "",
-      userpermissions: { rwd: ["hamdy", "tobias"], "r--": ["aaa"] },
-      existingLinks: [{ link: "url", permission: "rw-", uuid: "blah" }],
+      selectedLinks: [],
     };
   },
   computed: {
@@ -127,6 +196,12 @@ export default {
 
       return this.req.items[this.selected[0]].url;
     },
+    permissionList() {
+      return Array.from(this.sharePermissions, (x) => x.name);
+    },
+    selectedUsersCount(){
+      return this.selectedUsers.length
+    }
   },
   async beforeMount() {
     try {
@@ -149,12 +224,11 @@ export default {
     this.clip.on("success", () => {
       this.$showSuccess(this.$t("success.linkCopied"));
     });
-    this.sharePermission = this.sharePermissions[0].value;
-    this.linkPermission = this.sharePermissions[0].value;
+    this.sharePermission = this.sharePermissions[0].name;
+    this.linkPermission = this.sharePermissions[0].name;
 
     // this.userpermissions = api.listUserpermissions(this.url)
     // this.existingLinks = api.listLinks(this.url)
-
   },
   beforeDestroy() {
     this.clip.destroy();
@@ -204,11 +278,11 @@ export default {
         this.$showError(e);
       }
     },
-    deleteUserAccess: async function(user, permission){
-      await api.deleteUserAccess(this.url, user,permission)
+    deleteUserAccess: async function(user, permission) {
+      await api.deleteUserAccess(this.url, user, permission);
     },
-    deleteAllShares: async function(){
-      await api.deleteAllShares(this.url)
+    deleteAllShares: async function() {
+      await api.deleteAllShares(this.url);
     },
     getLink: async function() {
       await api.getShareableLink(this.url, this.linkPermission);
