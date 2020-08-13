@@ -31,24 +31,23 @@ export async function create(url, expires = '', unit = 'hours') {
   })
 }
 
-export async function shareWithUsers(path, users, permissions){
-  let body = { permissions, users}
-  body = JSON.stringify(body)
+export async function shareWithUsers(path, userList){
+  const body = JSON.stringify(userList)
   const url = `/api/share${path}`
   return fetchJSON(url, {
     method: 'POST',
     body
   })
 }
-export async function deleteUserAccess(path, user, permissions){
-  let body = { permissions, user}
-  body = JSON.stringify(body)
-  const url = `/api/share${path}`
-  return fetchJSON(url, {
-    method: 'POST',
-    body
-  })
-}
+// export async function deleteUserAccess(path, user){
+//   let body = { user}
+//   body = JSON.stringify(body)
+//   const url = `/api/share${path}`
+//   return fetchJSON(url, {
+//     method: 'POST',
+//     body
+//   })
+// }
 export async function deleteAllShares(path){
   return fetchURL(`/api/share${path}`, {
     method: 'DELETE'

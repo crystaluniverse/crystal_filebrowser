@@ -40,12 +40,15 @@
             </v-row>
           </v-toolbar>
         </template>
+        <template v-slot:item.permission="{ item }">
+          {{ permissionToHumanReadable(item.permission)}}
+        </template>
         <template v-slot:item.action="{ item }">
           <i
             class="material-icons"
             dark
             small
-            @click="deleteUserAccess(item.name, item.permission)"
+            @click="deleteUserAccess(item.name)"
             >delete</i
           >
         </template>
@@ -102,6 +105,9 @@
               >
             </v-row>
           </v-toolbar>
+        </template>
+        <template v-slot:item.permission="{ item }">
+          {{ permissionToHumanReadable(item.permission)}}
         </template>
         <template v-slot:item.action="{ item }">
           <i class="material-icons" dark small @click="deleteLink(item.uuid)"
@@ -334,17 +340,29 @@ export default {
     //     this.$showError(e);
     //   }
     // },
+    mapUserPermission(users, permission){
+      return users.map(user => {
+        return {
+          "name": user,
+          "permission": permission
+          }
+      })
+    },
     shareUsers: async function() {
-      const users = this.users.split(",");
+      let users = this.users.split(",");
+      users = this.mapUserPermission(users, this.sharePermission)
+      console.log(users)
       try {
-        await api.shareWithUsers(this.url, users, this.sharePermission);
+        await api.shareWithUsers(this.url, users);
       } catch (e) {
         console.log(e);
         this.$showError(e);
       }
     },
-    deleteUserAccess: async function(user, permission) {
-      await api.deleteUserAccess(this.url, user, permission);
+    deleteUserAccess: async function(user) {
+      user = this.mapUserPermission([user], "")
+      console.log(user)
+      await api.shareWithUsers(this.url, user );
     },
     deleteAllShares: async function() {
       await api.deleteAllShares(this.url);
