@@ -3,7 +3,6 @@
     <div class="card-title">
       <h2>Share</h2>
     </div>
-{{sharePermission}}
     <div class="card-content">
       <v-data-table
         dark
@@ -13,6 +12,8 @@
         item-key="name"
         show-select
         v-model="selectedUsers"
+        :footer-props="{ 'items-per-page-options': [5, 10, 15, -1] }"
+        :items-per-page="5"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -21,7 +22,7 @@
                 People who have access
               </v-col>
               <v-spacer></v-spacer>
-              <v-col cols="4">
+              <v-col cols="5">
                 <v-text-field
                   v-model="userSearch"
                   append-icon="mdi-magnify"
@@ -29,20 +30,36 @@
                   single-line
                   hide-details
                 ></v-text-field>
-                <v-btn class="ml-2" :enabled="selectedUsersCount>0">Delete {{selectedUsersCount}}</v-btn>
+                <v-btn class="ml-2" :disabled="selectedUsersCount == 0"
+                  ><i class="material-icons" dark small>delete</i>
+                  <span v-if="selectedUsersCount > 0">{{
+                    selectedUsersCount
+                  }}</span></v-btn
+                >
               </v-col>
             </v-row>
           </v-toolbar>
         </template>
         <template v-slot:item.action="{ item }">
-          <i class="material-icons" dark small @click="deleteUserAccess(item.name,item.permission)">delete</i>
+          <i
+            class="material-icons"
+            dark
+            small
+            @click="deleteUserAccess(item.name, item.permission)"
+            >delete</i
+          >
         </template>
       </v-data-table>
-      {{ selectedUsers }}
 
       <v-row dense align="center">
         <v-col cols="8">
-          <v-text-field dark v-model="users" clearable> </v-text-field>
+          <v-text-field
+            dark
+            v-model="users"
+            clearable
+            label="Insert 3bot names comma seperated"
+          >
+          </v-text-field>
         </v-col>
         <v-col cols="2">
           <v-select
@@ -60,7 +77,6 @@
         </v-col>
       </v-row>
 
-      <h4>Existing links</h4>
       <v-data-table
         dark
         :headers="linkheaders"
@@ -68,39 +84,50 @@
         item-key="uuid"
         show-select
         v-model="selectedLinks"
+        :footer-props="{ 'items-per-page-options': [5, 10, 15, -1] }"
+        :items-per-page="5"
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-row>
+            <v-row align="center">
               <v-col cols="4">
                 People who have access
               </v-col>
               <v-spacer></v-spacer>
-              <v-col cols="4">
-              </v-col>
+              <v-btn class="mr-3" :disabled="selectedLinksCount == 0"
+                ><i class="material-icons" dark small>delete</i>
+                <span v-if="selectedLinksCount > 0">{{
+                  selectedLinksCount
+                }}</span></v-btn
+              >
             </v-row>
           </v-toolbar>
         </template>
         <template v-slot:item.action="{ item }">
-          <i class="material-icons" dark small @click="deleteLink(item.uuid)">delete</i>
+          <i class="material-icons" dark small @click="deleteLink(item.uuid)"
+            >delete</i
+          >
         </template>
       </v-data-table>
-      {{selectedLinks}}
-      <h3>Get shareable link</h3>
-      Users with the following link will get the following right:
-      <v-select
-        dense
-        class="permissions"
-        dark
-        v-model="sharePermission"
-        :items="permissionList"
-      >
-      </v-select>
-      <button class="buteton button--flat" @click="getLink">
-        Get link
-      </button>
-
-      
+      <div class="mt-2">Create a link with the following rights:</div>
+      <v-row align="center" dense>
+        <v-col cols="2">
+          <v-select
+            dense
+            class="permissions"
+            dark
+            v-model="sharePermission"
+            :items="permissionList"
+          >
+          </v-select>
+        </v-col>
+        <v-col cols="2">
+          <button class="buteton button--flat" @click="getLink">
+            Get link
+          </button>
+        </v-col>
+        <v-spacer></v-spacer>
+      </v-row>
     </div>
 
     <div class="card-action">
@@ -175,8 +202,43 @@ export default {
       selectedUsers: [],
       userSearch: "",
 
-      linkheaders:[{text:"URL",value:"link"},{text: "Acces right",value: "permission"},{text: "Action",value: "action"}],
-      existingLinks: [{ link: "https://threefold.io/DDN4L34M6N434RJ3", permission: "rw-", uuid: "blah" }],
+      linkheaders: [
+        { text: "URL", value: "link" },
+        { text: "Acces right", value: "permission" },
+        { text: "Action", value: "action" },
+      ],
+      existingLinks: [
+        {
+          link: "https://threefold.io/DDN4L34M6N434RJ3",
+          permission: "rw-",
+          uuid: "blah",
+        },
+        {
+          link: "https://threefold.io/DDN4L34M6N434RJ3",
+          permission: "rw-",
+          uuid: "ads",
+        },
+        {
+          link: "https://threefold.io/DDN4L34M6N434RJ3",
+          permission: "rw-",
+          uuid: "fdf",
+        },
+        {
+          link: "https://threefold.io/DDN4L34M6N434RJ3",
+          permission: "rw-",
+          uuid: "qw",
+        },
+        {
+          link: "https://threefold.io/DDN4L34M6N434RJ3",
+          permission: "rw-",
+          uuid: "AE",
+        },
+        {
+          link: "https://threefold.io/DDN4L34M6N434RJ3",
+          permission: "rw-",
+          uuid: "ff",
+        },
+      ],
       linkPermission: "",
       selectedLinks: [],
     };
@@ -199,9 +261,12 @@ export default {
     permissionList() {
       return Array.from(this.sharePermissions, (x) => x.name);
     },
-    selectedUsersCount(){
-      return this.selectedUsers.length
-    }
+    selectedUsersCount() {
+      return this.selectedUsers.length;
+    },
+    selectedLinksCount() {
+      return this.selectedLinks.length;
+    },
   },
   async beforeMount() {
     try {
