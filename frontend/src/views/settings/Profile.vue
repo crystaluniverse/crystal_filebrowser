@@ -14,21 +14,6 @@
         <input class="button button--flat" type="submit" :value="$t('buttons.update')">
       </div>
     </form>
-
-    <form class="card" v-if="!user.lockPassword" @submit="updatePassword">
-      <div class="card-title">
-        <h2>{{ $t('settings.changePassword') }}</h2>
-      </div>
-
-      <div class="card-content">
-        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPassword')" v-model="password" name="password">
-        <input :class="passwordClass" type="password" :placeholder="$t('settings.newPasswordConfirm')" v-model="passwordConf" name="password">
-      </div>
-
-      <div class="card-action">
-        <input class="button button--flat" type="submit" :value="$t('buttons.update')">
-      </div>
-    </form>
   </div>
 </template>
 
