@@ -38,7 +38,7 @@ export default {
                 "url": `${window.location.origin}${this.documentLocation}`
             },
             "editorConfig": {
-              "callbackUrl": `${window.location.origin}/callback?auth=${this.jwt}&filename=${this.fileData.name}`,
+              "callbackUrl": `${window.location.origin}/callback?auth=${this.jwt}&filepath=${this.fileData.path}`,
               "user": {
                 "id": crypto.randomBytes(8).toString('hex'),
                 "name": this.user.username
