@@ -1,5 +1,7 @@
 <template>
-    <div id="document">
+  <div id="docwrapper">
+    <div id="document" >
+  </div>
 </div>
 </template>
 
@@ -51,3 +53,15 @@ export default {
   }
 }
 </script>
+<style scoped>
+body {
+  padding-top: 0!important;
+}
+#docwrapper {
+  height:100%;
+  top: 0;
+  position: absolute !important;
+  width:100%;
+}
+
+</style>

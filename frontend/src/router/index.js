@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/views/Login'
 import Layout from '@/views/Layout'
 import Files from '@/views/Files'
+import EditFiles from '@/views/EditFiles'
 import Share from '@/views/Share'
 import Users from '@/views/settings/Users'
 import User from '@/views/settings/User'
@@ -32,6 +33,14 @@ const router = new Router({
 
         document.title = 'Login'
         next()
+      }
+    },
+    {
+      path: '/edit',
+      name: 'EditFiles',
+      component: EditFiles,
+      meta: {
+        requiresAuth: true
       }
     },
     {

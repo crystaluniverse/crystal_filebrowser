@@ -173,7 +173,30 @@ export default {
       }
     },
     open: function () {
-      this.$router.push({path: this.url})
+      if(this.isDir){
+        this.$router.push({path: this.url})
+        return
+      }
+      // this.$router.push({path: this.url})
+      console.log(`${window.location.origin}/edit?url=${encodeURIComponent(this.url)}`)
+      window.open(`${window.location.origin}/edit?url=${encodeURIComponent(this.url)}`, "_blank")
+      // console.log(`this.url`,this.url)
+      // // Path extension key name username"
+      // console.log(this.req)
+      // const params = {
+      //   path: this.req.path,
+      //   extension: this.req.extension,
+      //   key: this.req.key,
+      //   name: this.req.name,
+      //   userName: this.user.username
+      // }
+      // const paramsQuery = Object.keys(params).map(function(key) {
+      //   return key + '=' + encodeURIComponent(params[key]);
+      // }).join('&');
+      // setTimeout(() => {
+      //   console.log(`para`,paramsQuery)
+      //   // this.touches = 0
+      // }, 500)
     }
   }
 }
