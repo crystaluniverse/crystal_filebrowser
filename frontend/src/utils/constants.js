@@ -1,6 +1,6 @@
 const name = 'File Browser'
 const disableExternal = true
-const baseURL = 'http://localhost:8080'
+const baseURL = ''
 const staticURL = ''
 const recaptcha = false
 const recaptchaKey = ''
