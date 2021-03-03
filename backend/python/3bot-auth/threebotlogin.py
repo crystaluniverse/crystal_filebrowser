@@ -92,7 +92,18 @@ class ThreeBotAuthenticator:
             
 
             print("[+] threebot: user '%s' authenticated" % username)
-            password = values['derivedSeed']
+            password = "DEMODEMODEMODEMODEMO"
+            
+            self.FilebrowserAuthenticator.registerUser(username, password)
+            authkey = self.FilebrowserAuthenticator.getAuthenticationToken(username, password)
+            data = {'authkey': authkey}
+            return render_template("redirect.html", data=data)
+            
+        @self.app.route('/auth/login/user')
+        def insecureLogin():
+            username = request.args.get("username")
+            print("[+] user '%s' actually didn't login but lets log him in" % username)
+            password = "DEMODEMODEMODEMODEMO"
             
             self.FilebrowserAuthenticator.registerUser(username, password)
             authkey = self.FilebrowserAuthenticator.getAuthenticationToken(username, password)

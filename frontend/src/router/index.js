@@ -19,7 +19,7 @@ import { baseURL } from '@/utils/constants'
 Vue.use(Router)
 
 const router = new Router({
-  base: baseURL,
+  // base: baseURL,
   mode: 'history',
   routes: [
     {
